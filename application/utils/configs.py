@@ -1,0 +1,1 @@
+DAYS_TO_FORECAST = [0, 3, 5, 7]
