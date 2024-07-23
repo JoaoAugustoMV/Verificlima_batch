@@ -11,12 +11,12 @@ class ForecastHGBrasil(WeatherForecastBase):
         self.source = 'HGBrasil'
         self.city = 'SAO PAULO'
 
-    async def __get_prediction_minus_x(self, x_days):
+    async def get_prediction_minus_x(self, x_days):
         current_date = datetime.now()
         data_mais_x = current_date + timedelta(days=x_days)
         data_key = data_mais_x.strftime('%d/%m')
 
-        json = await self.__request_forecast()
+        json = await self.request_forecast()
         for dia_info in json['results']['forecast']:
             if dia_info['date'] == data_key:
                 cd_dia = int(data_mais_x.strftime('%Y-%m-%d').replace('-', '')) 
@@ -43,7 +43,7 @@ class ForecastHGBrasil(WeatherForecastBase):
         
         return None
 
-    async def __request_forecast(self):
+    async def request_forecast(self):
         url = os.getenv("urlHGBrasil")
         url = f'{url}?woeid=455827%20'
         async with httpx.AsyncClient() as client:

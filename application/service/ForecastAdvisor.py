@@ -10,16 +10,16 @@ class ClimaAdvisorService(WeatherForecastBase):
         self.source = 'APIADVISOR'
         self.city = 'SAO PAULO'
 
-    async def __get_prediction_minus_x(self, x_days):
+    async def get_prediction_minus_x(self, x_days):
         current_date = datetime.now()
         data_mais_x = current_date + timedelta(days=x_days)
         data_key = data_mais_x.strftime('%Y-%m-%d')
-        json = await self.__request_forecast()
+        json = await self.request_forecast()
         for dia_info in json['data']:
             if dia_info['date'] == data_key:
                 dici = {
                         'cd_dia': int(data_key.replace('-', '')),
-                        'x_dias': x_days,                        
+                        'x_dias': x_days,
                         'fonte': self.source,
                         'cidade': self.city
                     }
@@ -38,7 +38,7 @@ class ClimaAdvisorService(WeatherForecastBase):
         
         return None
     
-    async def __request_forecast(self):
+    async def request_forecast(self):
         url = os.getenv("urlAdvisor")
         url = f'{url}/forecast/locale/3477/days/15?token={os.getenv("tokenAdvisor")}'
         async with httpx.AsyncClient() as client:
