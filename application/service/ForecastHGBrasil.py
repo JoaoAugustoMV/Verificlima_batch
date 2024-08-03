@@ -12,6 +12,7 @@ class ForecastHGBrasil(WeatherForecastBase):
         self.city = 'SAO PAULO'
 
     async def get_prediction_minus_x(self, x_days):
+        logging.info(f"Get predictions - {self.source}")
         current_date = datetime.now()
         data_mais_x = current_date + timedelta(days=x_days)
         data_key = data_mais_x.strftime('%d/%m')
@@ -48,8 +49,8 @@ class ForecastHGBrasil(WeatherForecastBase):
         url = f'{url}?woeid=455827%20'
         async with httpx.AsyncClient() as client:
             resp = await client.get(url)
-        
+        logging.info(f"Response - Request - {self.source}: resp.status_code")
         if resp.status_code != 200:
-            raise Exception("")
+            raise Exception(f"Error - Request - {self.source}", resp.text)
         
         return resp.json()
