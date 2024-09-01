@@ -1,4 +1,4 @@
-import os, httpx, logging, json
+import os, httpx, logging, uuid
 
 from datetime import datetime, timedelta
 from application.models.InformationDayForecast import InformationDayForecast
@@ -17,26 +17,25 @@ class ForecastHGBrasil(WeatherForecastBase):
         data_mais_x = current_date + timedelta(days=x_days)
         data_key = data_mais_x.strftime('%d/%m')
 
-        json = await self.request_forecast()
-        for dia_info in json['results']['forecast']:
+        for dia_info in self.json_forecast['results']['forecast']:
             if dia_info['date'] == data_key:
                 cd_dia = int(data_mais_x.strftime('%Y-%m-%d').replace('-', '')) 
                 dici = {
+                        "id": str(uuid.uuid4()),
                         'cd_dia': cd_dia,
-                        'x_dias': x_days,                        
+                        'x_dias': x_days,
+                        f'dia_previsao_feita_menos_x': str(current_date.date()),
                         'fonte': self.source,
                         'cidade': self.city,
                         'descricao': dia_info['description']
                     }
                 if x_days == 0:
                     dici.update({
-                        f'dia_previsao_feita_menos_x': str(current_date.date()),
                         f'temperatura_real_min': dia_info['min'],
                         f'temperatura_real_max':  dia_info['max'], 
                     })
                 else: 
                     dici.update({
-                        f'dia_previsao_feita_menos_x': str(current_date.date()),
                         f'temperatura_min_previsao_feita_menos_x': dia_info['min'],
                         f'temperatura_max_previsao_feita_menos_x':  dia_info['max'],
                     })
@@ -49,7 +48,7 @@ class ForecastHGBrasil(WeatherForecastBase):
         url = f'{url}?woeid=455827%20'
         async with httpx.AsyncClient() as client:
             resp = await client.get(url)
-        logging.info(f"Response - Request - {self.source}: resp.status_code")
+        logging.info(f"Response - Request - {self.source}: {resp.status_code}")
         if resp.status_code != 200:
             raise Exception(f"Error - Request - {self.source}", resp.text)
         

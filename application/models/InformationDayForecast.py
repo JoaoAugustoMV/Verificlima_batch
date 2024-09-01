@@ -2,7 +2,7 @@ from datetime import date
 from pydantic import BaseModel
 
 class InformationDayForecast(BaseModel):
-    id: int = None
+    id: str = None
     cd_dia: int
     x_dias: int = None
     dia_previsao_feita_menos_x: str = None
